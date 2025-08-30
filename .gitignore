@@ -5,9 +5,8 @@ build/
 dist/
 wheels/
 *.egg-info
+.venv
 
 .vscode/
-
-# Virtual environments
-.venv
+audio/
 !models/README.md
