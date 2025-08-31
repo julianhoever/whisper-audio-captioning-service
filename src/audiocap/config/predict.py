@@ -1,9 +1,9 @@
 ARCHITECTURE = dict(
-    name="openai/whisper-large-v2",
+    name="openai/whisper-tiny",
 )
 RUNTIME = dict(
-    use_fp16=True,
-    device="cuda",
+    use_fp16=False,
+    device="cpu",
 )
 DATALOADER = dict(
     batch_size=2,
