@@ -40,13 +40,6 @@ def main(
         writable=True,
         help="Path to the folder where the predictions will be saved",
     ),
-    recursive: bool = typer.Option(
-        False,
-        help="Whether to recursively search for audio files in the data directory",
-    ),
-    take_first_n: int = typer.Option(
-        None, help="Take only the first n files (for debugging)"
-    ),
 ) -> None:
     for i in range(torch.cuda.device_count()):
         print(i, torch.cuda.get_device_properties(i))
@@ -83,8 +76,8 @@ def main(
         src=data,
         tokenizer=tokenizer,
         feature_extractor=feature_extractor,
-        recursive=recursive,
-        take_n=take_first_n,
+        recursive=False,
+        take_n=None,
         source_ds=source_ds,
         task=task,
     )
