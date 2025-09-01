@@ -46,12 +46,12 @@ RUNTIME = Runtime(
     device="cpu",
 )
 DATALOADER = DataLoader(
-    batch_size=2,
+    batch_size=1,
     num_workers=4,
     pin_memory=True,
 )
 GENERATE = Generate(
-    max_length=80,
+    max_length=200,
     num_beams=5,
 )
 DATASET = Dataset(
