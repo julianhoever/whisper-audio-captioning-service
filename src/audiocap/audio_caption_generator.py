@@ -11,13 +11,22 @@ from transformers import (
 
 from audiocap.data import DataCollatorAudioSeq2SeqWithPadding, load_audios_for_predition
 from audiocap.models import WhisperForAudioCaptioning as Model
-from audiocap import config
 
 
 class AudioCaptionGenerator:
-    def __init__(self, checkpoint: Path) -> None:
-        self._device = config.RUNTIME.device
-        self._dtype = torch.float16 if config.RUNTIME.use_fp16 else torch.float32
+    def __init__(
+        self,
+        checkpoint: Path,
+        architecture: str = "openai/whisper-tiny",
+        use_fp16: bool = False,
+        device: str = "cpu",
+        generate_max_length: int = 200,
+        generate_num_beams: int = 5,
+    ) -> None:
+        self._device = device
+        self._dtype = torch.float16 if use_fp16 else torch.float32
+        self._generate_max_length = generate_max_length
+        self._generate_num_beams = generate_num_beams
 
         self._model = cast(Model, Model.from_pretrained(checkpoint))
         self._tokenizer = cast(
@@ -25,7 +34,7 @@ class AudioCaptionGenerator:
             Tokenizer.from_pretrained(checkpoint, language="en", task="transcribe"),
         )
         self._feature_extractor: FeatureExtractor = cast(
-            FeatureExtractor, FeatureExtractor.from_pretrained(config.ARCHITECTURE.name)
+            FeatureExtractor, FeatureExtractor.from_pretrained(architecture)
         )
         self._collator = DataCollatorAudioSeq2SeqWithPadding(
             self._tokenizer, self._feature_extractor, keep_cols=("file_name",)
@@ -40,8 +49,8 @@ class AudioCaptionGenerator:
             feature_extractor=self._feature_extractor,
             recursive=False,
             take_n=None,
-            source_ds=config.DATASET.source_ds,
-            task=config.DATASET.task,
+            source_ds="clotho",
+            task="caption",
         )
 
         if num_files != 1:
@@ -49,7 +58,9 @@ class AudioCaptionGenerator:
 
         loader = DataLoader(
             ds,
-            **config.DATALOADER.to_dict(),
+            batch_size=1,
+            num_workers=0,
+            pin_memory=False,
             collate_fn=self._collator,
             drop_last=False,
             shuffle=False,
@@ -62,7 +73,8 @@ class AudioCaptionGenerator:
                     forced_ac_decoder_ids=batch["forced_ac_decoder_ids"].to(
                         self._device
                     ),
-                    **config.GENERATE.to_dict(),
+                    max_length=self._generate_max_length,
+                    num_beams=self._generate_num_beams,
                 )
                 preds = self._tokenizer.batch_decode(
                     preds_tokens, skip_special_tokens=True
