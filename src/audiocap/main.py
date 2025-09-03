@@ -19,7 +19,7 @@ generator = AudioCaptionGenerator(
 )
 
 
-@app.post("/")
+@app.get("/")
 def root() -> Dict[str, Any]:
     return dict()
 
