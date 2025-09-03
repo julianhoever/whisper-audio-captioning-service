@@ -1,6 +1,6 @@
 FROM ghcr.io/astral-sh/uv:trixie-slim
 
-RUN apt-get update && apt-get install -y build-essential libz-dev libxml2-dev libxslt-dev python3-lxml
+RUN apt-get update && apt-get install -y curl build-essential libz-dev libxml2-dev libxslt-dev python3-lxml
 
 WORKDIR /app
 COPY . .
