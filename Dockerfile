@@ -6,4 +6,4 @@ WORKDIR /app
 COPY . .
 RUN uv sync --no-dev --locked
 
-CMD ["uv", "run", "uvicorn", "--host=0.0.0.0", "--port=80", "audiocap.main:app"]
+CMD ["uv", "run", "--no-dev", "uvicorn", "--host=0.0.0.0", "--port=80", "audiocap.main:app"]
