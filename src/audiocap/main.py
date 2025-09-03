@@ -19,6 +19,11 @@ generator = AudioCaptionGenerator(
 )
 
 
+@app.post("/")
+def root() -> Dict[str, Any]:
+    return dict()
+
+
 @app.post("/generate_caption")
 def generate_caption(file: UploadFile) -> Dict[str, Any]:
     with tempfile.TemporaryDirectory() as tmpdir:
